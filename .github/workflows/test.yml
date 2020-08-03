@@ -4,13 +4,13 @@ on:
   push:
     branches-ignore: [ master ]
     paths:
-    - 'src/'
-    - 'test/'
+    - 'src/**'
+    - 'test/**'
   pull_request:
     branches-ignore: [ master ]
     paths:
-    - 'src/'
-    - 'test/'
+    - 'src/**'
+    - 'test/**'
 
 jobs:
 

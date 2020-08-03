@@ -1,0 +1,56 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'src/Common/'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'src/Common/'
+
+jobs:
+
+  test:
+    name: Test on ${{matrix.operating-system}}
+    runs-on: ${{matrix.operating-system}}
+
+    strategy:
+      matrix:
+        operating-system: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    # Execute all unit tests in the solution
+    - name: Execute all unit tests
+      run: dotnet test --configuration Release
+
+  publish:
+    name: Publish package to nuget.org
+    needs: test
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Build project with packages
+      run: dotnet build src/Common/ --configuration Release --output packages -p:GITHUB_ACTIONS=true
+
+    - name: Publish to nuget.org
+      run: dotnet nuget push packages/ --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}

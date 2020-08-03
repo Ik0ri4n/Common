@@ -1,2 +1,2 @@
 # Common
-Common types and interface used in my projects.
+Common types and interfaces used in my projects.
